@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         //meta태그의 viewport사용 가능
         mWebView.getSettings().setUseWideViewPort(true);
-        mWebView.loadUrl("http://ec2-54-86-91-8.compute-1.amazonaws.com:5000/");
+        mWebView.loadUrl("http://ec2-52-78-110-63.ap-northeast-2.compute.amazonaws.com:5000/");
         mWebView.setWebViewClient(new WishWebViewClient());
     }
 
