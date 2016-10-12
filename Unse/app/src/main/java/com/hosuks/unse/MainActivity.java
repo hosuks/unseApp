@@ -1,5 +1,6 @@
 package com.hosuks.unse;
 
+
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -7,14 +8,25 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
+
 public class MainActivity extends AppCompatActivity {
+
+    private BackPressCloseHandler backPressCloseHandler;
 
     WebView mWebView; //전역으로 하나 선언해 준다.
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // FCM 구현
+        FirebaseMessaging.getInstance().subscribeToTopic("news");
+        FirebaseInstanceId.getInstance().getToken();
 
         /*
 	        mWebView관련 아래 코드들은 WebView 설정과 관련된 부분들이다.
@@ -47,11 +59,14 @@ public class MainActivity extends AppCompatActivity {
         mWebView.getSettings().setUseWideViewPort(true);
         mWebView.loadUrl("http://ec2-52-78-110-63.ap-northeast-2.compute.amazonaws.com:5000/");
         mWebView.setWebViewClient(new WishWebViewClient());
+
+        backPressCloseHandler = new BackPressCloseHandler(this);
+
     }
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()){
+        if ((keyCode == KeyEvent.KEYCODE_BACK) && mWebView.canGoBack()) {
             mWebView.goBack();
             return true;
         }
@@ -60,9 +75,15 @@ public class MainActivity extends AppCompatActivity {
 
     private class WishWebViewClient extends WebViewClient {
         @Override
-        public boolean shouldOverrideUrlLoading(WebView view, String url){
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
             view.loadUrl(url);
             return true;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        //super.onBackPressed();
+        backPressCloseHandler.onBackPressed();
     }
 }
