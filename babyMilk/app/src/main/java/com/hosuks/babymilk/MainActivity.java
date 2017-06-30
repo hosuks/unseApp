@@ -1,6 +1,7 @@
-package com.hosuks.unse;
+package com.hosuks.babymilk;
 
-
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -9,7 +10,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -21,15 +21,13 @@ public class MainActivity extends AppCompatActivity {
 
     WebView mWebView; //전역으로 하나 선언해 준다.
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // AdMob
-        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1946972349439159~1679803028");
+        //-- AdMob
+        MobileAds.initialize(getApplicationContext(), "ca-app-pub-1946972349439159~6863963823");
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -67,11 +65,26 @@ public class MainActivity extends AppCompatActivity {
 
         //meta태그의 viewport사용 가능
         mWebView.getSettings().setUseWideViewPort(true);
-        mWebView.loadUrl("http://ec2-52-78-110-63.ap-northeast-2.compute.amazonaws.com:5000/");
-        mWebView.setWebViewClient(new WishWebViewClient());
+        mWebView.loadUrl("http://ec2-52-78-110-63.ap-northeast-2.compute.amazonaws.com:9010/babyMilk");
+        //mWebView.setWebViewClient(new WishWebViewClient());
+
+        mWebView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+
+                if (url.contains("babyMilk")) {   // 현재 창에서 열기
+                    view.clearView();
+                    view.getSettings().setDefaultZoom(WebSettings.ZoomDensity.MEDIUM);
+                    view.loadUrl(url);
+                } else {    // 새창에서 열기
+                    Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(i);
+                }
+                return true;
+            }
+        });
 
         backPressCloseHandler = new BackPressCloseHandler(this);
-
     }
 
     @Override
